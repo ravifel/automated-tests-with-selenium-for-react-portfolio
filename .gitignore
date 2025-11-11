@@ -1,0 +1,126 @@
+##############################
+# .NET & Visual Studio Ignore
+##############################
+
+## Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Tt]emp/
+*.tmp
+*.temp
+*.obj
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+*.user
+*.suo
+*.userosscache
+*.vspscc
+*.vssscc
+*.sln.docstates
+*.dbmdl
+*.bak
+
+## Visual Studio folders
+.vs/
+.vscode/
+*.csproj.user
+*.DotSettings.user
+
+## Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## Auto-generated files
+Generated_Code/
+launchSettings.json
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/*
+!packages/build/
+!packages/repositories.config
+
+## Resharper / Rider / JetBrains
+_ReSharper*/
+*.DotSettings
+.idea/
+*.sln.iml
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## Linux
+*~
+
+## Logs
+*.log
+*.tlog
+
+## WebDriver binaries (can be reinstalled via NuGet)
+chromedriver.exe
+msedgedriver.exe
+geckodriver.exe
+IEDriverServer.exe
+
+## Selenium / Browser Automation
+selenium-screenshot*.png
+selenium-log*.txt
+
+## Temporary test outputs
+Screenshots/
+Output/
+Reports/
+Logs/
+
+## Local environment / config
+.env
+*.local
+appsettings.Development.json
+
+## JetBrains Rider / Visual Studio Cache
+.idea/
+.vs/
+*.suo
+*.user
+*.userprefs
+*.swp
+*.sln.iml
+
+## System files
+ehthumbs.db
+Icon?
+Desktop.ini
+
+## Backup files
+*.bak
+*.old
+*.orig
+*.tmp
+
+##############################
+# Custom Project Notes
+##############################
+# The following files should remain under version control:
+# - .sln
+# - .csproj
+# - packages.config
+# - README.md
+# - Source code folders (BasePage, Pages, Tests, Utils, WebDriverExtensions)
+# - Configuration files
