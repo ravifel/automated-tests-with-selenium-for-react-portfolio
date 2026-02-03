@@ -1,0 +1,53 @@
+﻿name: Selenium NUnit - CI
+
+on:
+  push:
+    branches: [ "develop", "main", "master" ]
+  pull_request:
+    branches: [ "develop", "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: windows-latest
+
+    env:
+      BROWSER: chrome
+      HEADLESS: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages (packages.config)
+        run: nuget restore .\AutomatedTestProjectRaviWebsite.sln
+
+      - name: Build solution
+        run: msbuild .\AutomatedTestProjectRaviWebsite.sln /p:Configuration=Release
+
+      - name: Run tests (VSTest)
+        run: |
+          vstest.console.exe .\AutomatedTestProjectRaviWebsite\bin\Release\AutomatedTestProjectRaviWebsite.dll /Logger:trx
+
+      - name: Upload test results (trx)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            **/*.trx
+
+      - name: Upload Selenium artifacts (screenshots)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-artifacts
+          path: |
+            **/artifacts/*.png
+          if-no-files-found: ignore

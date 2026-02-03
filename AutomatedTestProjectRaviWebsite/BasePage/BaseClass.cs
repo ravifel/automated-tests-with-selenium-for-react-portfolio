@@ -57,33 +57,35 @@ namespace AutomatedTestsRaviPortfolio.BasePage
              */
 
             string browser = (Environment.GetEnvironmentVariable("BROWSER") ?? "chrome").ToLower();
+            bool headless = (Environment.GetEnvironmentVariable("HEADLESS") ?? "false").ToLower() == "true";
 
             switch (browser)
             {
                 case "firefox":
                     var firefoxOptions = new FirefoxOptions();
-                    // Start maximized for consistent local runs.
-                    firefoxOptions.AddArgument("--start-maximized");
-                    // For CI, you could enable headless:
-                    // firefoxOptions.AddArgument("--headless");
+                    if (headless) firefoxOptions.AddArgument("--headless");
+                    firefoxOptions.AddArgument("--width=1920");
+                    firefoxOptions.AddArgument("--height=1080");
                     driver = new FirefoxDriver(firefoxOptions);
                     break;
 
                 case "edge":
                     var edgeOptions = new EdgeOptions();
-                    edgeOptions.AddArgument("--start-maximized");
-                    // For CI, you could enable headless:
-                    // edgeOptions.AddArgument("--headless=new");
+                    if (headless) edgeOptions.AddArgument("--headless=new");
+                    edgeOptions.AddArgument("--window-size=1920,1080");
                     driver = new EdgeDriver(edgeOptions);
                     break;
 
                 case "chrome":
                 default:
                     var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("--start-maximized");
-                    // For CI, you could enable headless:
-                    // chromeOptions.AddArgument("--headless=new");
-                    // chromeOptions.AddArgument("--window-size=1920,1080");
+                    if (headless) chromeOptions.AddArgument("--headless=new");
+                    chromeOptions.AddArgument("--window-size=1920,1080");
+
+                    // Improves stability in CI/containerized environments.
+                    chromeOptions.AddArgument("--no-sandbox");
+                    chromeOptions.AddArgument("--disable-dev-shm-usage");
+
                     driver = new ChromeDriver(chromeOptions);
                     break;
             }
@@ -99,19 +101,25 @@ namespace AutomatedTestsRaviPortfolio.BasePage
         [TearDown]
         public void Cleanup()
         {
+            try
+            {
+                var status = TestContext.CurrentContext.Result.Outcome.Status;
+                if (status == NUnit.Framework.Interfaces.TestStatus.Failed && driver is ITakesScreenshot ss)
+                {
+                    var dir = System.IO.Path.Combine(TestContext.CurrentContext.WorkDirectory, "artifacts");
+                    System.IO.Directory.CreateDirectory(dir);
+
+                    var file = System.IO.Path.Combine(dir, $"{TestContext.CurrentContext.Test.Name}.png");
+                    ss.GetScreenshot().SaveAsFile(file);
+                    TestContext.AddTestAttachment(file, "Screenshot on failure");
+                }
+            }
+            catch { /* não quebra o teardown */ }
+
             if (driver != null)
             {
-                try
-                {
-                    // Quit closes all windows and ends the session cleanly.
-                    driver.Quit();
-                    driver.Dispose();
-                }
-                catch (Exception e)
-                {
-                    // Do not let teardown errors crash the test runner; just log the issue.
-                    Console.WriteLine("Error while disposing WebDriver: " + e.Message);
-                }
+                try { driver.Quit(); driver.Dispose(); }
+                catch (Exception e) { Console.WriteLine("Error while disposing WebDriver: " + e.Message); }
             }
         }
 
