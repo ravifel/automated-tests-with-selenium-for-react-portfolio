@@ -31,17 +31,20 @@ jobs:
       - name: Build solution
         run: msbuild .\AutomatedTestProjectRaviWebsite.sln /p:Configuration=Release
 
+      - name: Install VSTest
+        uses: darenm/Setup-VSTest@v1
+
       - name: Run tests (VSTest)
         run: |
-          vstest.console.exe .\AutomatedTestProjectRaviWebsite\bin\Release\AutomatedTestProjectRaviWebsite.dll /Logger:trx
+          vstest.console.exe .\AutomatedTestProjectRaviWebsite\bin\Release\AutomatedTestProjectRaviWebsite.dll /Logger:"trx;LogFileName=test_results.trx" /ResultsDirectory:TestResults
 
       - name: Upload test results (trx)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: |
-            **/*.trx
+          path: TestResults/**/*.trx
+          if-no-files-found: ignore
 
       - name: Upload Selenium artifacts (screenshots)
         if: failure()
