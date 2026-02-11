@@ -89,10 +89,32 @@ You are free to fork, learn from, and adapt it for your own **Selenium WebDriver
 | **Programming Language** | C# (.NET Framework 4.7.2) |
 | **Test Framework** | NUnit 3 |
 | **Automation Tool** | Selenium WebDriver |
-| **Driver Management** | ChromeDriver, EdgeDriver, GeckoDriver |
+| **Driver Management** | Dynamic ChromeDriver setup in CI (version-matched), GeckoDriver, IEDriver |
 | **IDE** | Visual Studio 2022 |
 | **Build Tool** | .NET CLI / MSBuild |
 | **Version Control** | Git & GitHub |
+
+---
+
+## 🤖 Continuous Integration (CI)
+
+This project includes a fully configured **GitHub Actions pipeline** that:
+
+- Restores NuGet dependencies
+- Builds the solution using MSBuild
+- Installs a ChromeDriver version dynamically matched to the runner’s Chrome version
+- Executes the NUnit test suite using VSTest
+- Generates TRX test reports
+- Uploads screenshots on test failure
+- Enforces execution timeout to prevent stalled jobs
+
+The pipeline ensures:
+
+- Browser-driver compatibility in CI environments
+- Stability against Chrome auto-updates
+- Reliable test execution in headless mode
+
+Workflow location:
 
 ---
 
@@ -110,13 +132,27 @@ Below is the complete list of NuGet packages used in this project:
 | NUnit3TestAdapter | 4.5.0 | Enables NUnit test discovery in Visual Studio |
 | Selenium.Support | 4.8.0 | Selenium support libraries |
 | Selenium.WebDriver | 4.8.0 | Core Selenium WebDriver bindings for C# |
-| Selenium.WebDriver.ChromeDriver | 142.0.7444.6100 | ChromeDriver binary for Chrome 142.x |
 | Selenium.WebDriver.GeckoDriver | 0.36.0 | GeckoDriver binary for Firefox |
 | Selenium.WebDriver.IEDriver | 4.14.0 | IE WebDriver binary |
 
 ---
 
 ## 🚀 How to Run the Tests
+
+### 🌐 Environment Variables
+The test framework supports environment-based configuration:
+
+| Variable | Description |
+|-----------|-------------|
+| `BROWSER` | Select browser: `chrome`, `edge`, `firefox` |
+| `HEADLESS` | Enable headless mode: `true` or `false` |
+
+Example:
+```bash
+set BROWSER=chrome
+set HEADLESS=true
+dotnet test
+```
 
 ### 🖥️ Prerequisites
 - Windows, macOS, or Linux environment
@@ -139,3 +175,4 @@ dotnet test
 # Run using a specific browser
 set BROWSER=firefox
 dotnet test
+```
